@@ -28,9 +28,19 @@ class WebsocketTransport extends WebSocketClient implements IOTransport {
     public WebsocketTransport(URI uri, IOConnection connection) {
         super(uri);
         this.connection = connection;
-        SSLContext context = IOConnection.getSslContext();
+        SSLContext context = null;
+        try {
+            context = SSLContext.getInstance("TLS", "HarmonyJSSE");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            context.init(null, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if("wss".equals(uri.getScheme()) && context != null) {
-	        this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(context));
+            this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(context));
         }
     }
 
